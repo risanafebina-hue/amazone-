@@ -1,0 +1,57 @@
+import 'package:amazoneproject/DownloadPage.dart';
+import 'package:amazoneproject/HomePage.dart';
+import 'package:amazoneproject/PrimePage.dart';
+import 'package:amazoneproject/SearchPage.dart';
+import 'package:amazoneproject/SubscriptionPage.dart';
+import 'package:enefty_icons/enefty_icons.dart';
+import 'package:flutter/material.dart';
+
+class Bottom extends StatefulWidget {
+  const Bottom({super.key});
+
+  @override
+  State<Bottom> createState() => _BottomState();
+}
+
+class _BottomState extends State<Bottom> {
+  int _index = 0;
+  final List<Widget> _pages = [
+    const Homepage(),
+    const Primepage(),
+    const Subscriptionpage(),
+    const Downloadpage(),
+    const Searchpage(),
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_index],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        currentIndex: _index,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        onTap: (i) => setState(() => _index = i),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(EneftyIcons.arrow_circle_down_outline),
+            label: "Prime",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(EneftyIcons.grid_eraser_outline),
+            label: "Subscriptions",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(EneftyIcons.arrow_down_2_outline),
+            label: "Downloads",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(EneftyIcons.search_normal_2_outline),
+            label: "Serach",
+          ),
+        ],
+      ),
+    );
+  }
+}
