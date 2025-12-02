@@ -1,0 +1,73 @@
+import 'package:dio/dio.dart';
+
+class ApiService {
+  final String _apiKey = "be595f612234462dd633265e6aa12385";
+  final Dio _dio = Dio(BaseOptions(baseUrl: "https://api.themoviedb.org/3"));
+  String imageUrl(String? path, {String size = "w500"}) =>
+      path == null ? "" : "https://image.tmdb.org/t/p/$size$path";
+
+  Future<List> getMovies() async {
+    try {
+      final res = await _dio.get(
+        "/movie/popular",
+        queryParameters: {"api_key": _apiKey},
+      );
+      return res.data["results"] as List;
+    } catch (e) {
+      print("getMovies error: $e");
+      return [];
+    }
+  }
+
+  Future<List> getTrendMovies() async {
+    try {
+      final res = await _dio.get(
+        "/trending/movie/day",
+        queryParameters: {"api_key": _apiKey},
+      );
+      return res.data["results"] as List;
+    } catch (e) {
+      print("getTrentMovies error :$e");
+      return [];
+    }
+  }
+
+  Future<List> getTopRated() async {
+    try {
+      final res = await _dio.get(
+        "/movie/top_rated",
+        queryParameters: {"api_key": _apiKey},
+      );
+      return res.data["results"] as List;
+    } catch (e) {
+      print("getTopRated error : $e");
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getMovieDetails(int id) async {
+    try {
+      final res = await _dio.get(
+        "/movie/$id",
+        queryParameters: {"api_key": _apiKey},
+      );
+      return res.data["results"] as Map<String, dynamic>;
+    } catch (e) {
+      print("getMovieDetails error:$e");
+      return null;
+    }
+  }
+
+  Future<List> searchMovies(String query) async {
+    try {
+      final res = await _dio.get(
+        "/search/movie",
+        queryParameters: {"api_key": _apiKey, "query": query},
+      );
+      return res.data["results"] as List;
+    } catch (e) {
+      print("searchMovies error :$e");
+      return [];
+    }
+  }
+}
