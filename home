@@ -1,0 +1,198 @@
+import 'package:amazoneproject/api_service.dart';
+import 'package:amazoneproject/movieDetails.dart';
+import 'package:amazoneproject/profile.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:enefty_icons/enefty_icons.dart';
+import 'package:flutter/material.dart';
+
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
+
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  final ApiService api = ApiService();
+  List trending = [];
+  List popular = [];
+  List topRated = [];
+
+  String selectedTab = "Movies";
+
+  @override
+  void initState() {
+    super.initState();
+    loadMovies();
+  }
+
+  void loadMovies() async {
+    trending = await api.getTrendMovies();
+    popular = await api.getMovies();
+    topRated = await api.getTopRated();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        leading: Image.network(
+          "https://wallpapers.com/images/hd/amazon-prime-video-soxdlts7btm403q5.jpg",
+          width: 300,
+          fit: BoxFit.contain,
+        ),
+        actions: [
+          Icon(Icons.device_hub),
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => Profile()),
+              );
+            },
+            icon: Icon(EneftyIcons.profile_bold, color: Colors.white),
+          ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: ["Movies", "Tv Shows", "Live Tv"]
+                  .map(
+                    (tab) => GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedTab = tab;
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: selectedTab == tab
+                              ? Colors.white
+                              : Colors.grey,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          tab,
+                          style: TextStyle(
+                            color: selectedTab == tab
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  trending.isEmpty
+                      ? SizedBox(height: 200)
+                      : CarouselSlider(
+                          options: CarouselOptions(
+                            height: 200,
+                            autoPlay: true,
+                            enlargeCenterPage: true,
+                          ),
+                          items: trending.map((movie) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        Moviedetails(movieId: movie["id"]),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(5),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    api.imageUrl(
+                                      movie["backdrop_path"],
+                                      size: "w780",
+                                    ),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                  SizedBox(height: 20),
+                  movieSection("popular", popular),
+                  movieSection("Top Rated", topRated),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  movieSection(String title, List data) {
+    if (data.isEmpty) return SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            title,
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+        SizedBox(
+          height: 180,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final movie = data[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => Moviedetails(movieId: movie["id"]),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      api.imageUrl(movie["poster_path"]),
+                      width: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
