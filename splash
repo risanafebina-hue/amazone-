@@ -1,0 +1,38 @@
+import 'dart:async';
+
+import 'package:amazoneproject/bottom.dart';
+import 'package:flutter/material.dart';
+
+class Splash extends StatefulWidget {
+  const Splash({super.key});
+
+  @override
+  State<Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<Splash> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => Bottom()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Image.network(
+          "https://m.media-amazon.com/images/G/01/AdProductsWebsite/images/campaigns/primeVideo/AMADS_2025_Sizzle_Q1_AThousandFutures_Pre_MasterHD_16x9_Poster11.jpg",
+          width: 550,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
